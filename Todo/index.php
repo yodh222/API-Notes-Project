@@ -23,9 +23,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_COOKIE['User'])) {
         $data = mysqli_fetch_all($query, MYSQLI_ASSOC);
 
         echo json_encode(['Data' => $data], JSON_PRETTY_PRINT);
-    } elseif (isset($_POST['req']) && $_POST['req'] == 'updateData' && isset($_POST['data']) && isset($_POST['status']) && isset($_POST['idTodo'])) {
-        $stmt = mysqli_prepare($conn, "UPDATE todo_list SET data = ?, status = ? WHERE id = ?");
-        mysqli_stmt_bind_param($stmt, 'ssd', $_POST['data'], $_POST['status'], $_POST['idNote']);
+    } elseif (isset($_POST['req']) && $_POST['req'] == 'updateData' && isset($_POST['idTodo'])) {
+        $stmt;
+        if (isset($_POST['data'])) {
+            $stmt = mysqli_prepare($conn, "UPDATE todo_list SET data = ? WHERE id = ?");
+            mysqli_stmt_bind_param($stmt, 'ss', $_POST['data'], $_POST['idTodo']);
+        }else{
+            $stmt = mysqli_prepare($conn, "UPDATE todo_list SET status = ? WHERE id = ?");
+            mysqli_stmt_bind_param($stmt, 'ss', $_POST['status'], $_POST['idTodo']);
+        }
 
         if (mysqli_stmt_execute($stmt)) {
             $response = array('Info' => 'Berhasil edit todo list');
